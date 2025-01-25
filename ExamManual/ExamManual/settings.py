@@ -28,7 +28,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-AUTH_USER_MODEL = 'ExamManualApp.User'
+AUTH_USER_MODEL = 'ExamManualApp.User' #подключение модели бд
 
 # Application definition
 
@@ -50,7 +50,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'ExamManualApp.middleware.ForcePasswordResetMiddleware',
+    'ExamManualApp.middleware.ForcePasswordResetMiddleware', #редирект
 ]
 
 ROOT_URLCONF = 'ExamManual.urls'

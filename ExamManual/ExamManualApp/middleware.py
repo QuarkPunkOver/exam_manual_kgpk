@@ -9,3 +9,4 @@ class ForcePasswordResetMiddleware:
             if request.path != '/password-reset/':  # Убедитесь, что это путь к форме сброса
                 return redirect('/password-reset/')  # Замените на правильный путь
         return self.get_response(request)
+#Глобальный редирект первосозданных акков на сброс пароля

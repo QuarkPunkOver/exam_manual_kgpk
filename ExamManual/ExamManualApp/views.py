@@ -41,7 +41,7 @@ def password_reset_view(request):
             request.user.FirstAuth = False  # Пометка, что пароль был сброшен
             request.user.save()
             messages.success(request, "Ваш пароль был успешно обновлен.")
-            return redirect('home')  # Замените 'home' на вашу главную страницу
+            return redirect('home')
     else:
         form = PasswordResetForm(user=request.user)
 

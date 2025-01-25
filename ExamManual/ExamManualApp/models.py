@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 
-class UserManager(BaseUserManager):
+class UserManager(BaseUserManager): #функция создания пользователя/суперпользователя
     def create_user(self, Login, password=None, **extra_fields):
         if not Login:
             raise ValueError("Поле Login должно быть заполнено")
@@ -21,7 +21,7 @@ class UserManager(BaseUserManager):
 
         return self.create_user(Login, password, **extra_fields)
 
-class User(AbstractBaseUser):
+class User(AbstractBaseUser): # бд
     IDUser = models.AutoField(primary_key=True)
     Patronymic = models.CharField(max_length=255, blank=True, null=True, verbose_name='Отчество')
     Login = models.CharField(max_length=255, unique=True, verbose_name='Логин')
