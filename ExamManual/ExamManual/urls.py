@@ -23,4 +23,5 @@ urlpatterns = [
     path('', views.login_view, name='login'),  # Главная страница - форма авторизации
     path('home/', views.home_view, name='home'),  # После входа перенаправление сюда
     path('logout/', views.logout_view, name='logout'), # Выход
+    path('password-reset/', views.password_reset_view, name='password_reset'),
 ]

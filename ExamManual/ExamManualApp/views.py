@@ -1,12 +1,14 @@
 from django.shortcuts import render
 
 from django.shortcuts import render, redirect
-from django.contrib.auth import logout
+from django.contrib.auth import logout, update_session_auth_hash
 from django.contrib.auth import login as auth_login
 from django.contrib.auth.models import User as DjangoUser
 from ExamManualApp.models import User
 from django.contrib.auth.decorators import login_required
-from .forms import LoginForm
+from .forms import LoginForm, PasswordResetForm
+from django.contrib.auth import update_session_auth_hash
+from django.contrib import messages
 
 def login_view(request):
     if request.method == "POST":
@@ -16,9 +18,8 @@ def login_view(request):
             password = form.cleaned_data['password']
             # поиск пользователя в бд через models User 
             user = User.objects.filter(Login=username).first()
-            if user and user.Password == password:  # Простое сравнение пароля
-                django_user, created = DjangoUser.objects.get_or_create(username=username)
-                auth_login(request, django_user)
+            if user and user.check_password(password):  # Безопасная проверка пароля
+                auth_login(request, user)
                 return redirect('home')
             else:
                 form.add_error(None, "Invalid username or password")
@@ -29,6 +30,22 @@ def login_view(request):
 @login_required
 def home_view(request):
     return render(request, 'home.html')
+
+@login_required
+def password_reset_view(request):
+    if request.method == 'POST':
+        form = PasswordResetForm(user=request.user, data=request.POST)
+        if form.is_valid():
+            form.save()
+            update_session_auth_hash(request, request.user)  # Обновление сессии пользователя
+            request.user.FirstAuth = False  # Пометка, что пароль был сброшен
+            request.user.save()
+            messages.success(request, "Ваш пароль был успешно обновлен.")
+            return redirect('home')  # Замените 'home' на вашу главную страницу
+    else:
+        form = PasswordResetForm(user=request.user)
+
+    return render(request, 'password_reset_form.html', {'form': form})
 
 def logout_view(request):
     logout(request)
