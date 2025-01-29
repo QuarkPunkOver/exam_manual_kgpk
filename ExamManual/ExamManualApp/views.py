@@ -9,6 +9,7 @@ from django.contrib.auth.decorators import login_required
 from .forms import LoginForm, PasswordResetForm
 from django.contrib.auth import update_session_auth_hash
 from django.contrib import messages
+from django.contrib.auth import authenticate
 
 def login_view(request):
     if request.method == "POST":
@@ -17,12 +18,12 @@ def login_view(request):
             username = form.cleaned_data['login']
             password = form.cleaned_data['password']
             # поиск пользователя в бд через models User 
-            user = User.objects.filter(Login=username).first()
-            if user and user.check_password(password):  # Безопасная проверка пароля
-                auth_login(request, user)
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                auth_login(request, user)  # Устанавливаем сессию
                 return redirect('home')
             else:
-                form.add_error(None, "Invalid username or password")
+                form.add_error(None, "Неверное имя пользователя или пароль.")
     else:
         form = LoginForm()
     return render(request, 'login.html', {'form': form})
@@ -36,10 +37,11 @@ def password_reset_view(request):
     if request.method == 'POST':
         form = PasswordResetForm(user=request.user, data=request.POST)
         if form.is_valid():
-            form.save()
-            update_session_auth_hash(request, request.user)  # Обновление сессии пользователя
-            request.user.FirstAuth = False  # Пометка, что пароль был сброшен
+            new_password = form.cleaned_data['new_password1']  # Получаем новый пароль
+            request.user.password = new_password  # Присваиваем без хэширования
+            request.user.FirstAuth = False  # Обновляем статус первичной авторизации
             request.user.save()
+            update_session_auth_hash(request, request.user)  # Обновляем сессию
             messages.success(request, "Ваш пароль был успешно обновлен.")
             return redirect('home')
     else:

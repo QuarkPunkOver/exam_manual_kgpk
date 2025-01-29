@@ -30,6 +30,10 @@ ALLOWED_HOSTS = []
 
 AUTH_USER_MODEL = 'ExamManualApp.User' #подключение модели бд
 
+AUTHENTICATION_BACKENDS = [
+    'ExamManualApp.SelfPass.PlainPasswordAuthBackend',
+]
+
 # Application definition
 
 INSTALLED_APPS = [
